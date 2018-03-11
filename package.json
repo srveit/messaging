@@ -15,5 +15,8 @@
     "type": "git",
     "url": "git://github.com/srveit/messaging.git"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^5.0.0"
+  }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "messaging",
+  "version": "1.0.0",
+  "description": "Asynchronous message bus based on websockets.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "asynchrous",
+    "messaging"
+  ],
+  "author": "Stephen R. Veit",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/srveit/messaging.git"
+  },
+  "license": "ISC"
+}

@@ -28,13 +28,89 @@ describe('messaging', () => {
         });
       });
       describe('when started', () => {
-        let port;
+        let port, serverUrl;
         beforeEach(async () => {
           port = await messaging.start(200000);
+          serverUrl = `ws://localhost:${port}/`;
         });
         afterEach(async () => await messaging.stop());
         it('should return the port', () => {
           expect(port).toEqual(jasmine.any(Number));
+        });
+        describe('and started as client', () => {
+          let server2Identity, clientMessaging;
+          beforeEach(() => {
+            server2Identity = 'server 3';
+            clientMessaging = createMessaging({identity: server2Identity});
+          });
+          afterEach(async () => await clientMessaging.stop());
+          it('should succeed', () => {
+            expect(clientMessaging).toEqual({
+              addClient: jasmine.any(Function),
+              createdAt: jasmine.any(Number),
+              identity: server2Identity,
+              numberOfConnections: jasmine.any(Function),
+              removeAllMessageListeners: jasmine.any(Function),
+              onMessage: jasmine.any(Function),
+              sendMessage: jasmine.any(Function),
+              serverPort: jasmine.any(Function),
+              start: jasmine.any(Function),
+              stop: jasmine.any(Function),
+              waitTillConnected: jasmine.any(Function)
+            });
+          });
+          describe('and connected to server', () => {
+            beforeEach(async () => {
+              console.log('serverUrl', serverUrl);
+              clientMessaging.addClient(serverUrl);
+              await clientMessaging.waitTillConnected(serverIdentity);
+              await messaging.waitTillConnected(server2Identity);
+            });
+            describe('and send message to server', () => {
+              let clientMessage, receivedMessage;
+              beforeEach(done => {
+                clientMessage = 'hello';
+                messaging.removeAllMessageListeners();
+                messaging.onMessage(message => {
+                  receivedMessage = message;
+                  done();
+                });
+                clientMessaging.sendMessage({
+                  to: serverIdentity,
+                  message: clientMessage
+                });
+              });
+              it('should receive message', () => {
+                expect(receivedMessage).toEqual({
+                  fromIdentity: server2Identity,
+                  to: serverIdentity,
+                  message: clientMessage
+                });
+              });
+            });
+            describe('and send message from server', () => {
+              let serverMessage, receivedMessage;
+              beforeEach(done => {
+                serverMessage = 'message';
+                clientMessaging.removeAllMessageListeners();
+                clientMessaging.onMessage(message => {
+                  receivedMessage = message;
+                  done();
+                });
+                messaging.sendMessage({
+                  to: server2Identity,
+                  message: serverMessage
+                });
+              });
+              it('should receive message', () => {
+                expect(receivedMessage).toEqual({
+                  fromIdentity: serverIdentity,
+                  to: server2Identity,
+                  message: serverMessage
+                });
+              });
+            });
+          });
         });
         describe('and then stopped', () => {
           beforeEach(async () => await messaging.stop());
@@ -129,6 +205,7 @@ describe('messaging', () => {
           });
           describe('and connected to server', () => {
             beforeEach(async () => {
+              console.log('serverUrl', serverUrl);
               clientMessaging.addClient(serverUrl);
               await clientMessaging.waitTillConnected(serverIdentity);
               await messaging.waitTillConnected(server2Identity);

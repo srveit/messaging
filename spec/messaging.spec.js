@@ -9,16 +9,17 @@ describe('messaging', () => {
       let app, serverIdentity, messaging;
       beforeEach(() => {
         app = jasmine.createSpy('app');
-        serverIdentity = 'server';
+        serverIdentity = 'server.foo';
         messaging = createMessaging({app, identity: serverIdentity});
       });
       it('should succeed', () => {
         expect(messaging).toEqual({
           addClient: jasmine.any(Function),
           createdAt: jasmine.any(Number),
-          identity: 'server',
+          identity: serverIdentity,
           numberOfConnections: jasmine.any(Function),
           removeAllMessageListeners: jasmine.any(Function),
+          onConnection: jasmine.any(Function),
           onMessage: jasmine.any(Function),
           sendMessage: jasmine.any(Function),
           serverPort: jasmine.any(Function),
@@ -51,6 +52,7 @@ describe('messaging', () => {
               identity: server2Identity,
               numberOfConnections: jasmine.any(Function),
               removeAllMessageListeners: jasmine.any(Function),
+              onConnection: jasmine.any(Function),
               onMessage: jasmine.any(Function),
               sendMessage: jasmine.any(Function),
               serverPort: jasmine.any(Function),
@@ -61,29 +63,29 @@ describe('messaging', () => {
           });
           describe('and connected to server', () => {
             beforeEach(async () => {
-              console.log('serverUrl', serverUrl);
               clientMessaging.addClient(serverUrl);
               await clientMessaging.waitTillConnected(serverIdentity);
               await messaging.waitTillConnected(server2Identity);
             });
             describe('and send message to server', () => {
-              let clientMessage, receivedMessage;
+              let clientMessage, receivedMessage, shortServerIdentity;
               beforeEach(done => {
                 clientMessage = 'hello';
+                shortServerIdentity = serverIdentity.split('.')[0];
                 messaging.removeAllMessageListeners();
                 messaging.onMessage(message => {
                   receivedMessage = message;
                   done();
                 });
                 clientMessaging.sendMessage({
-                  to: serverIdentity,
+                  to: shortServerIdentity,
                   message: clientMessage
                 });
               });
               it('should receive message', () => {
                 expect(receivedMessage).toEqual({
                   fromIdentity: server2Identity,
-                  to: serverIdentity,
+                  to: shortServerIdentity,
                   message: clientMessage
                 });
               });
@@ -136,6 +138,7 @@ describe('messaging', () => {
           identity: serverIdentity,
           numberOfConnections: jasmine.any(Function),
           removeAllMessageListeners: jasmine.any(Function),
+          onConnection: jasmine.any(Function),
           onMessage: jasmine.any(Function),
           sendMessage: jasmine.any(Function),
           serverPort: jasmine.any(Function),
@@ -195,6 +198,7 @@ describe('messaging', () => {
               identity: server2Identity,
               numberOfConnections: jasmine.any(Function),
               removeAllMessageListeners: jasmine.any(Function),
+              onConnection: jasmine.any(Function),
               onMessage: jasmine.any(Function),
               sendMessage: jasmine.any(Function),
               serverPort: jasmine.any(Function),
@@ -205,7 +209,6 @@ describe('messaging', () => {
           });
           describe('and connected to server', () => {
             beforeEach(async () => {
-              console.log('serverUrl', serverUrl);
               clientMessaging.addClient(serverUrl);
               await clientMessaging.waitTillConnected(serverIdentity);
               await messaging.waitTillConnected(server2Identity);

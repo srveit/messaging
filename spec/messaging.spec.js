@@ -12,7 +12,7 @@ describe('messaging', () => {
         messaging = createMessaging({ app, identity: serverIdentity })
       })
 
-      xit('should succeed', () => {
+      it('should succeed', () => {
         expect(messaging).toEqual({
           addClient: expect.any(Function),
           createdAt: expect.any(Number),
@@ -40,7 +40,7 @@ describe('messaging', () => {
 
         afterEach(async () => await messaging.stop())
 
-        xit('should return the port', () => {
+        it('should return the port', () => {
           expect(port).toEqual(expect.any(Number))
         })
 
@@ -72,7 +72,7 @@ describe('messaging', () => {
             })
           })
 
-          xdescribe('and connected to server', () => {
+          describe('and connected to server', () => {
             beforeEach(async () => {
               clientMessaging.addClient(serverUrl)
               await clientMessaging.waitTillConnected(serverIdentity)
@@ -81,6 +81,7 @@ describe('messaging', () => {
 
             describe('and send message to server', () => {
               let clientMessage, receivedMessage, shortServerIdentity
+
               beforeEach((done) => {
                 clientMessage = 'hello'
                 shortServerIdentity = serverIdentity.split('.')[0]
@@ -106,6 +107,7 @@ describe('messaging', () => {
 
             describe('and send message from server', () => {
               let serverMessage, receivedMessage
+
               beforeEach((done) => {
                 serverMessage = 'message'
                 clientMessaging.removeAllMessageListeners()
@@ -132,6 +134,7 @@ describe('messaging', () => {
 
         describe('and then stopped', () => {
           beforeEach(async () => await messaging.stop())
+
           it('should have undefined port', () => {
             expect(messaging.serverPort()).toBe(undefined)
           })
@@ -141,6 +144,7 @@ describe('messaging', () => {
 
     xdescribe('without app', () => {
       let serverIdentity, messaging
+
       beforeEach(() => {
         serverIdentity = 'server'
         messaging = createMessaging({
@@ -149,7 +153,7 @@ describe('messaging', () => {
         })
       })
 
-      xit('should succeed', () => {
+      it('should succeed', () => {
         expect(messaging).toEqual({
           addClient: expect.any(Function),
           createdAt: expect.any(Number),
@@ -177,11 +181,11 @@ describe('messaging', () => {
 
         afterEach(async () => await messaging.stop())
 
-        xit('should return the port', () => {
+        it('should return the port', () => {
           expect(port).toEqual(expect.any(Number))
         })
 
-        xdescribe('and second messaging started with same port', () => {
+        describe('and second messaging started with same port', () => {
           let secondServerIdentity, secondMessaging, failed
 
           beforeEach(async () => {
@@ -204,7 +208,7 @@ describe('messaging', () => {
           })
         })
 
-        xdescribe('and then stopped', () => {
+        describe('and then stopped', () => {
           beforeEach(async () => {
             await messaging.stop()
           })
@@ -216,12 +220,13 @@ describe('messaging', () => {
 
         describe('and started as client', () => {
           let server2Identity, clientMessaging
+
           beforeEach(() => {
             server2Identity = 'server 2'
             clientMessaging = createMessaging({ identity: server2Identity })
           })
 
-          xit('should succeed', () => {
+          it('should succeed', () => {
             expect(clientMessaging).toEqual({
               addClient: expect.any(Function),
               createdAt: expect.any(Number),
@@ -273,7 +278,7 @@ describe('messaging', () => {
               })
             })
 
-            xdescribe('and send message from server', () => {
+            describe('and send message from server', () => {
               let serverMessage, receivedMessage
 
               beforeEach((done) => {
@@ -298,7 +303,7 @@ describe('messaging', () => {
               })
             })
 
-            xdescribe('and server is closed', () => {
+            describe('and server is closed', () => {
               beforeEach(async () => {
                 await messaging.stop()
               })
@@ -359,6 +364,7 @@ describe('messaging', () => {
         clientMessaging,
         clientMessage,
         receivedMessage
+
       beforeEach(async () => {
         serverIdentity = 'server'
         messaging = createMessaging({

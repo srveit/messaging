@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - use `jest` instead of `jasmine` for testing
+- handle closing of websockets to prevent open handle leak
 
 ## [1.0.0] - 2018-04-28
 

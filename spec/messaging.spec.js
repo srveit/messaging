@@ -3,7 +3,7 @@ const { createMessaging } = require('../index')
 
 describe('messaging', () => {
   describe('createMessaging', () => {
-    xdescribe('with app', () => {
+    describe('with app', () => {
       let app, serverIdentity, messaging
 
       beforeEach(() => {
@@ -79,9 +79,10 @@ describe('messaging', () => {
               await messaging.waitTillConnected(server2Identity)
             })
 
+            afterEach(async () => await clientMessaging.removeClient(serverUrl))
+
             describe('and send message to server', () => {
               let clientMessage, receivedMessage, shortServerIdentity
-
               beforeEach((done) => {
                 clientMessage = 'hello'
                 shortServerIdentity = serverIdentity.split('.')[0]
@@ -107,7 +108,6 @@ describe('messaging', () => {
 
             describe('and send message from server', () => {
               let serverMessage, receivedMessage
-
               beforeEach((done) => {
                 serverMessage = 'message'
                 clientMessaging.removeAllMessageListeners()
@@ -134,7 +134,6 @@ describe('messaging', () => {
 
         describe('and then stopped', () => {
           beforeEach(async () => await messaging.stop())
-
           it('should have undefined port', () => {
             expect(messaging.serverPort()).toBe(undefined)
           })
@@ -142,9 +141,8 @@ describe('messaging', () => {
       })
     })
 
-    xdescribe('without app', () => {
+    describe('without app', () => {
       let serverIdentity, messaging
-
       beforeEach(() => {
         serverIdentity = 'server'
         messaging = createMessaging({
@@ -220,7 +218,6 @@ describe('messaging', () => {
 
         describe('and started as client', () => {
           let server2Identity, clientMessaging
-
           beforeEach(() => {
             server2Identity = 'server 2'
             clientMessaging = createMessaging({ identity: server2Identity })
@@ -251,7 +248,7 @@ describe('messaging', () => {
               await messaging.waitTillConnected(server2Identity)
             })
 
-            afterEach(async () => clientMessaging.removeClient(serverUrl))
+            afterEach(async () => await clientMessaging.removeClient(serverUrl))
 
             describe('and send message to server', () => {
               let clientMessage, receivedMessage
@@ -348,71 +345,6 @@ describe('messaging', () => {
                     })
                   })
                 })
-              })
-            })
-          })
-        })
-      })
-    })
-
-    describe('memory leak', () => {
-      let serverIdentity,
-        messaging,
-        port,
-        serverUrl,
-        server2Identity,
-        clientMessaging,
-        clientMessage,
-        receivedMessage
-
-      beforeEach(async () => {
-        serverIdentity = 'server'
-        messaging = createMessaging({
-          httpPort: 8111,
-          identity: serverIdentity,
-        })
-        port = await messaging.start(200000)
-        serverUrl = `ws://localhost:${port}/`
-        server2Identity = 'server 2'
-        clientMessaging = createMessaging({ identity: server2Identity })
-        clientMessaging.addClient(serverUrl)
-        await clientMessaging.waitTillConnected(serverIdentity)
-        await messaging.waitTillConnected(server2Identity)
-      })
-
-      beforeEach((done) => {
-        clientMessage = 'hello'
-        messaging.removeAllMessageListeners()
-        messaging.onMessage((message) => {
-          receivedMessage = message
-          console.log('received', receivedMessage)
-          done()
-        })
-        clientMessaging.sendMessage({
-          to: serverIdentity,
-          message: clientMessage,
-        })
-      })
-
-      afterEach(async () => {
-        console.log('removeClient')
-        await clientMessaging.removeClient(serverUrl)
-        console.log('stop')
-        await messaging.stop()
-        console.log('stopped')
-      })
-
-      describe('when started', () => {
-        describe('and started as client', () => {
-          describe('and connected to server', () => {
-            describe('and send message to server', () => {
-              it('should receive message', () => {
-                console.log('expect')
-                // expect(receivedMessage).toEqual({
-                //   fromIdentity: server2Identity,
-                //   to: serverIdentity,
-                //   message: clientMessage,
-                // })
               })
             })
           })

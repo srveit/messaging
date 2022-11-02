@@ -1,4 +1,4 @@
-'use strict';
-const {createMessaging} = require('./lib/messaging');
+'use strict'
+const { createMessaging } = require('./lib/messaging')
 
-exports.createMessaging = createMessaging;
+exports.createMessaging = createMessaging

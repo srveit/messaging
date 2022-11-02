@@ -22,6 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial code
 
-[Unreleased]: https://github.com/srveit/insteon-hub2/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/srveit/messaging/compare/v1.0.0...HEAD
 
 [1.0.0]: https://github.com/srveit/messaging/releases/tag/v1.0.0
